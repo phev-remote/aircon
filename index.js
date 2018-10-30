@@ -13,7 +13,7 @@ const deviceEvents = new DeviceEvents({ store : deviceEventStore, pubsub })
 const deviceRegistry = new DeviceRegistry({ jwt , store : deviceRegistryStore })
 const firebaseAdmin = require('firebase-admin')
 
-const serviceAccount = require('./firebase.json')
+const serviceAccount = require(process.env.FIREBASEJSON || './firebase.json')
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
