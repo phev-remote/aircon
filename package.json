@@ -1,0 +1,38 @@
+{
+  "name": "aircon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env mocha --require babel-register --require babel-polyfill --recursive ./src/**/*.spec.js",
+    "build": "babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phev-remote/aircon.git"
+  },
+  "author": "Jamie Nuttall",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phev-remote/aircon/issues"
+  },
+  "homepage": "https://github.com/phev-remote/aircon#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.2.0",
+    "cross-env": "^5.2.0",
+    "mocha": "^5.2.0",
+    "sinon": "^7.1.0"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^0.20.1",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.4",
+    "firebase-admin": "^6.1.0"
+  }
+}
