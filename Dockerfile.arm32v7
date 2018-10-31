@@ -1,0 +1,7 @@
+FROM arm32v7/node:stretch
+COPY bin/qemu-arm-static /usr/bin
+ADD . .
+RUN npm install
+RUN npm run build
+EXPOSE 8080
+CMD ["node", "index.js"]

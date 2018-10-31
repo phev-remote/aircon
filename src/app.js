@@ -12,6 +12,10 @@ const App = deps => {
     http.use(cors())
     const aircon = new AirCon(deps)
     
+    http.get('/status', (req, res) => {
+        res.status(200).send({ status : 'ok'})
+    })
+
     http.get('/:deviceId', async (req, res) => {
 
         const deviceId = req.params.deviceId

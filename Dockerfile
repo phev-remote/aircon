@@ -1,4 +1,4 @@
-FROM node:slim
+FROM node:stretch
 ADD . .
 RUN npm install
 RUN npm run build

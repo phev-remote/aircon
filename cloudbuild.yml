@@ -1,0 +1,3 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['run', '-rm', '--privileged' ,'multiarch/qemu-user-static:register']
