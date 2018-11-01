@@ -28,7 +28,7 @@ const App = deps => {
             const token = req.headers.authorization.split(' ')[1]            
 
             const response = await aircon.status({ deviceId , jwt: token })   
-            
+            console.log('Here 3 ' +JSON.stringify(response))
             if(response.status)
             {
                 res.status(200).send(response)
@@ -37,7 +37,7 @@ const App = deps => {
             {
                 res.status(error.authError ? 401 : 400).send(error.description)
             }
-            
+            res.status(400).send(response)
         } else {
             res.status(400).send('Invalid request no auth token')
         }

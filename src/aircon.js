@@ -10,9 +10,8 @@ class AirCon extends EventEmitter {
     }
     async status(args) {
         const { jwt, deviceId } = args
-        
         const device = await this.device.get({jwt , deviceId})
-
+        
         if(!device) {
             return { response : 'device not found'}
         }
@@ -41,10 +40,11 @@ class AirCon extends EventEmitter {
         
         if(!deviceAlreadySubscribed)
         {
-            
             this.store.set(deviceId, { status : null})
             return this.events.subscribe({ deviceId, callback : this.handleEvent })
             
+        } else {
+            return undefined
         }
     }
     handleEvent(event) {

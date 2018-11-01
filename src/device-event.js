@@ -15,13 +15,14 @@ class DeviceEvents extends EventEmitter {
         const { callerId, deviceId, callback } = args
         const topicName = `projects/${projectId}/topics/my-device-events`
         const subscriptionName = `${env}-${deviceId}-subscription`
-                    
+        
         return this.pubsub
             .topic(topicName)
                 .subscription(subscriptionName)
                     .get({
                         autoCreate: true,
                     }).then(results => {
+        
                         const subscription = results[0]
                         subscription.on('message', this.event)
                     
@@ -34,7 +35,6 @@ class DeviceEvents extends EventEmitter {
                     })
     }
     event(message) {
-        console.log(JSON.stringify(message.data))
         this.emit(message.attributes.deviceId,{ deviceId : message.attributes.deviceId,...JSON.parse(message.data) })
         message.ack()
     }
