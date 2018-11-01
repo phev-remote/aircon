@@ -11,26 +11,28 @@ class AirCon extends EventEmitter {
     async status(args) {
         const { jwt, deviceId } = args
         
-        try {
-            const device = await this.device.get({jwt , deviceId})
+        const device = await this.device.get({jwt , deviceId})
 
-            if(!device) {
-                return { response : 'device not found'}
-            }
-    
-            const isCached = await this.store.has(deviceId)
-    
-            if(isCached) {
-                return this.store.get(deviceId)
-            } else {
-                this.subscribe({ deviceId })
-                return { status : null }
-            }
-            
-        } catch (err) {
-            return err
+        if(!device) {
+            return { response : 'device not found'}
         }
+    
+        if(device.error) {
+            return { error : device.error }
+        }
+        const isCached = await this.store.has(deviceId)
+    
+        if(isCached) {
+            return this.store.get(deviceId)
+        } else {
+            const response = await this.subscribe({ deviceId })
+            
+            if(response.error) {
+                return response.error
+            }
 
+            return { status : null }
+        }
     }
     async subscribe(args) {
         const { deviceId } = args
@@ -41,7 +43,7 @@ class AirCon extends EventEmitter {
         {
             
             this.store.set(deviceId, { status : null})
-            this.events.subscribe({ deviceId, callback : this.handleEvent })
+            return this.events.subscribe({ deviceId, callback : this.handleEvent })
             
         }
     }

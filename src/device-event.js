@@ -11,26 +11,27 @@ class DeviceEvents extends EventEmitter {
         this.pubsub = deps.pubsub
         this.event = this.event.bind(this)
     }
-    subscribe(args) {
+    async subscribe(args) {
         const { callerId, deviceId, callback } = args
         const topicName = `projects/${projectId}/topics/my-device-events`
-        const subscriptionName = `${env}-${callerId}-${deviceId}-subscription`
-
-        this.pubsub
+        const subscriptionName = `${env}-${deviceId}-subscription`
+                    
+        return this.pubsub
             .topic(topicName)
-            .createSubscription(subscriptionName)
-                .then(results => {
-                    const subscription = results[0]
+                .subscription(subscriptionName)
+                    .get({
+                        autoCreate: true,
+                    }).then(results => {
+                        const subscription = results[0]
+                        subscription.on('message', this.event)
                     
-                    subscription.on('message', this.event)
+                        this.on(deviceId, callback)
                     
-                    this.on(deviceId, callback)
-                    
-                    this.store.set(subscriptionName, { deviceId, callback,  subscription, callerId})
-                })
-                .catch(err => {
-                    console.error('ERROR:', err)
-                })
+                        this.store.set(subscription.name, { deviceId, callback,  subscription, callerId})
+                        return { response : 'ok' }
+                    }).catch(err => {
+                        console.error('ERROR:', err)
+                    })
     }
     event(message) {
         console.log(JSON.stringify(message.data))

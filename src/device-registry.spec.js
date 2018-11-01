@@ -20,7 +20,7 @@ describe('Device Registry', () => {
 
         sandbox.stub(jwt,'verify').returns({sub : 123})
         sandbox.stub(jwtDifferentUser,'verify').returns({sub : 124})
-        sandbox.stub(jwtInvalid,'verify').rejects({error : 'Not authorised'})
+        sandbox.stub(jwtInvalid,'verify').returns({error : {code : 'auth/argument-error', message : 'blah blah'}})
         
         //sandbox.stub(deviceNoDevice,'get').resolves(null)
         //sandbox.stub(events,'subscribe').resolves(true)
@@ -82,18 +82,17 @@ describe('Device Registry', () => {
             store
         }
     
+        deps.store.set('123', { deviceId : '123', uid : 123 })
+
         const deviceRegistry = new DeviceRegistry(deps)
         
-        try {
-            await deviceRegistry.get({ deviceId : '123', jwt : 'yyyyy' })
-            throw new Error('Should not get here')
-        } catch (err) {
-            
-            assert.isNotNull(err)
-        }
+        const response = await deviceRegistry.get({ deviceId : '123', jwt : 'yyyyy' })
+        
+        assert(response.error)
+        assert.isTrue(response.error.authError)
         
     })
-    it('Should reject if user not allowed to control device', done => {
+    it('Should reject if user not allowed to control device', async () => {
     
         const deps = {
             jwt : jwtDifferentUser,
@@ -104,20 +103,10 @@ describe('Device Registry', () => {
 
         const deviceRegistry = new DeviceRegistry(deps)
         
-        try {
-            deviceRegistry.get({ deviceId : '123', jwt : 'yyyyy' })
-                .then(x => {
-                    assert.fail('Should not get here and returned ' + JSON.stringify(x))
-                    done()
-                })
-                .catch(err => {
-                    assert.deepEqual(err,{ error : 'User not Authorised'})
-                    done()
-                })
-        } catch (err) {
-            assert.fail('Should not get here and returned ' + JSON.stringify(err))
-            done()
-        }
+        const response = await deviceRegistry.get({ deviceId : '123', jwt : 'yyyyy' })
+
+        assert(response.error)
+        assert.isTrue(response.error.authError)
         
     })
 })

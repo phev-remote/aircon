@@ -19,17 +19,27 @@ const App = deps => {
     http.get('/:deviceId', async (req, res) => {
 
         const deviceId = req.params.deviceId
-
+        
         if(!deviceId) {
             res.status(400).send('No device specified')
         }
 
         if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') { 
             const token = req.headers.authorization.split(' ')[1]            
-            const response = await aircon.status({ deviceId , jwt: token })    
-            res.status(200).send(response)
+
+            const response = await aircon.status({ deviceId , jwt: token })   
+            
+            if(response.status)
+            {
+                res.status(200).send(response)
+            }
+            if(response.error)
+            {
+                res.status(error.authError ? 401 : 400).send(error.description)
+            }
+            
         } else {
-            res.status(401).send('User unauthorised')
+            res.status(400).send('Invalid request no auth token')
         }
     })
     

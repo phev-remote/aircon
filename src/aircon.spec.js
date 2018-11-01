@@ -11,6 +11,8 @@ describe('Air Con', () => {
     let device = { get : () => null }
     let deviceNoDevice = { get : () => null }
     let deviceReject = { get : () => Promise.reject({Error : 'some error'}) }
+    let deviceAuthError = { get : () => ({error : { authError: true}}) }
+    
     let events = { subscribe : () => null, on : () => null, dispatch : () => null}
     let store = null 
     
@@ -298,7 +300,23 @@ describe('Air Con', () => {
         assert(events.dispatch.calledOnce) 
         assert(events.dispatch.calledWith({ deviceId : '123', state: { airConOn : false}}),'Should have called events dispacth with correct args')
     })
-    
+    it('Should handle auth error', async () => {
+        const request = {
+            jwt : '1234',
+            deviceId: '123'
+        }
+        const deps = {
+            device : deviceAuthError,
+            store,
+            events
+        }
+        
+        const aircon = new AirCon(deps)
+        
+        const response = await aircon.status(request)
+        
+        assert.isTrue(response.error.authError)
 
+    })
 })
 

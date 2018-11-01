@@ -1,4 +1,4 @@
-const gcpConfig = process.env.GCP_CONFIG || '.gcpconfig.json' 
+const gcpConfig = process.env.GCP_CONFIG || './gcpconfig.json' 
 const firebaseConfig = process.env.FIREBASE_CONFIG || './firebase.json'
 
 const DeviceEvents = require('./lib/device-event').default
@@ -21,8 +21,8 @@ const deviceRegistry = new DeviceRegistry({ jwt , store : deviceRegistryStore })
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
-  //databaseURL: 'https://phev-db3fa.firebaseio.com'
 })
 
 deviceRegistryStore.set('my-device2', { deviceId: 'my-device2', uid : '3tZrIIUySpftIwnTOt8iDn76g9j1'})
+
 require('./lib/app').default({ events : deviceEvents, device : deviceRegistry, store : airConStore})

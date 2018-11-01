@@ -10,8 +10,9 @@ describe('Device Events', () => {
     let sandbox = null
     let store = null 
     let publisher = { publish : () => null }
-    let results = [{ on : () => null}]
-    let topic = { createSubscription : () => null, publisher : () => null}
+    let results = [{ on : () => null, name : 'local-123-subscription'}]
+    let subscription = { get : () => null }
+    let topic = { subscription : () => null, publisher : () => null}
     let pubsub = { topic : () => null }
     
     beforeEach(() => {
@@ -21,7 +22,8 @@ describe('Device Events', () => {
         sandbox.stub(publisher, 'publish').resolves(true)
         sandbox.stub(topic,'publisher').returns(publisher)
 
-        sandbox.stub(topic,'createSubscription').resolves(results)
+        sandbox.stub(subscription, 'get').resolves(results)
+        sandbox.stub(topic,'subscription').returns(subscription)
         
         sandbox.stub(pubsub,'topic').returns(topic)
 
@@ -38,10 +40,11 @@ describe('Device Events', () => {
         const deviceEvents = new DeviceEvents({ store, pubsub })
         const func = () => null
 
-        await deviceEvents.subscribe({callerId : 'aircon', deviceId : '123', callback : func})
+        const response = await deviceEvents.subscribe({deviceId : '123', callback : func})
 
-        assert.isTrue(store.has('local-aircon-123-subscription'))
-        assert.equal(func, store.get('local-aircon-123-subscription').callback)
+        assert.deepEqual(response, { response : 'ok'})
+        assert.isTrue(store.has('local-123-subscription'))
+        assert.equal(store.get('local-123-subscription').callback,func)
 
     })
     it('Should dispatch to correct topic', async () => {

@@ -6,6 +6,7 @@ class DeviceRegistry {
     }
     async get(args) {
         
+
         const { deviceId, jwt } = args
 
         const deviceExists = await this.store.has(deviceId)
@@ -14,19 +15,19 @@ class DeviceRegistry {
             return undefined
         }
         
-        try{
-            const decodedJWT = await this.jwt.verify(jwt)
-            
-            const device = await this.store.get(deviceId)
-
-            if(device.uid === decodedJWT.sub) {
-                return device
-            } else {
-                return Promise.reject({ error : 'User not Authorised'})
-            }
-        } catch (err) {
-            return Promise.reject({ error : 'JWT Not Authorised'})
-        }     
+        const decodedJWT = await this.jwt.verify(jwt)
+        
+        if(decodedJWT.error) {
+            return { error : { description : 'User not authorised invalid token', authError : true} }
+        }
+        
+        const device = await this.store.get(deviceId)
+                
+        if(device.uid === decodedJWT.sub) {
+            return device
+        } else {
+            return { error : { description : 'User not authorised to get device', authError : true} }
+        } 
     }
 }
 

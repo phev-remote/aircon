@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clean": "rimraf lib",
     "test": "cross-env mocha --require babel-register --require babel-polyfill --recursive ./src/**/*.spec.js",
     "build": "babel src -d lib"
   },
@@ -26,6 +27,7 @@
     "chai": "^4.2.0",
     "cross-env": "^5.2.0",
     "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
     "sinon": "^7.1.0"
   },
   "dependencies": {
