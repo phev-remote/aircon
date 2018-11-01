@@ -21,8 +21,7 @@ const App = deps => {
         const deviceId = req.params.deviceId
         
         if(!deviceId) {
-            res.status(400).send('No device specified')
-            console.log('1')
+            res.status(400).send({ error : 'No device specified' })
         }
 
         if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') { 
@@ -30,19 +29,12 @@ const App = deps => {
 
             const response = await aircon.status({ deviceId , jwt: token })   
             
-            if(response.status)
-            {
-                res.status(200).send(response)
+           if(response.error) {
+                res.status(response.error.authError ? 401 : 400).send({ error : response.error.description })
                 return
             } else {
-                if(response.error)
-                {
-                    res.status(response.error.authError ? 401 : 400).send(response.error.description)
-                    return
-                } else {
-                    res.status(400).send(response)
-                    return
-                }
+                res.status(200).send(response)
+                return
             }
         }
     })

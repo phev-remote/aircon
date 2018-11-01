@@ -24,13 +24,15 @@ class AirCon extends EventEmitter {
         if(isCached) {
             return this.store.get(deviceId)
         } else {
+            this.store.set(deviceId, { status : null})
+            
             const response = await this.subscribe({ deviceId })
             
-            if(response.error) {
-                return response.error
+            if(response) {
+                return response
             }
 
-            return { status : null }
+            return this.store.get(deviceId)
         }
     }
     async subscribe(args) {
@@ -40,7 +42,6 @@ class AirCon extends EventEmitter {
         
         if(!deviceAlreadySubscribed)
         {
-            this.store.set(deviceId, { status : null})
             return this.events.subscribe({ deviceId, callback : this.handleEvent })
             
         } else {
