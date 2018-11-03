@@ -10,7 +10,7 @@ describe('Air Con', () => {
     let sandbox = null;
     let device = { get : () => null }
     let deviceNoDevice = { get : () => null }
-    let deviceReject = { get : () => Promise.reject({Error : 'some error'}) }
+    let deviceReject = { get : () => ({Error : 'some error'}) }
     let deviceAuthError = { get : () => ({error : { authError: true}}) }
     
     let events = { subscribe : () => null, on : () => null, dispatch : () => null}
