@@ -4,7 +4,7 @@ steps:
 - name: 'gcr.io/cloud-builders/npm'
   args: ['test']
 - name: 'gcr.io/cloud-builders/npm'
-  args: ['run,''build']  
+  args: ['run,'build']  
 - name: 'gcr.io/cloud-builders/docker'
   args: ['run', '--rm', '--privileged', 'multiarch/qemu-user-static:register', '--reset']
 - name: 'gcr.io/cloud-builders/docker'
