@@ -14,7 +14,7 @@ class DeviceRegistry {
 
         if(!deviceExists) {
             
-            const device = await this.serviceRequest.getJsonServiceRequest(DEVICE_SERVICE_URI,jwt)
+            const device = await this.serviceRequest.getJsonServiceRequest(DEVICE_SERVICE_URI + deviceId, jwt)
             
             if(device.error) {
                 return { error : device.error }

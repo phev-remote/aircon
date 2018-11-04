@@ -63,7 +63,7 @@ describe('Device Registry', () => {
         assert.deepInclude(device, { deviceId : '123' })
         
     })
-    it('Should return undefined if not found', async () => {
+    it('Should call service if not found', async () => {
     
         const deps = {
             jwt,
@@ -76,7 +76,41 @@ describe('Device Registry', () => {
         const device = await deviceRegistry.get({ deviceId : '123', jwt : 'xxxx' })
         
         assert.deepEqual(device, { error : { description : 'Device does not exist'} })
+
+        assert(serviceRequestNoDevice.getJsonServiceRequest.calledOnce) 
         
+    })
+    it('Should call service with correct args', async () => {
+    
+        const deps = {
+            jwt,
+            store,
+            serviceRequest: serviceRequestNoDevice
+        }
+    
+        const deviceRegistry = new DeviceRegistry(deps)
+        
+        const device = await deviceRegistry.get({ deviceId : '123', jwt : 'xxxx' })
+        
+        assert.deepEqual(device, { error : { description : 'Device does not exist'} })
+
+        assert(serviceRequestNoDevice.getJsonServiceRequest.calledWith('http://device:8080/123', 'xxxx'))
+        
+    })
+    it('Should return error if not found', async () => {
+    
+        const deps = {
+            jwt,
+            store,
+            serviceRequest: serviceRequestNoDevice
+        }
+    
+        const deviceRegistry = new DeviceRegistry(deps)
+        
+        const device = await deviceRegistry.get({ deviceId : '123', jwt : 'xxxx' })
+        
+        assert.deepEqual(device, { error : { description : 'Device does not exist'} })
+
     })
     it('Should reject if invalid JWT', async () => {
     
