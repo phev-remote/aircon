@@ -23,6 +23,6 @@ firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
 })
 
-deviceRegistryStore.set('my-device2', { deviceId: 'my-device2', uid : '3tZrIIUySpftIwnTOt8iDn76g9j1'})
+//deviceRegistryStore.set('my-device2', { deviceId: 'my-device2', uid : '3tZrIIUySpftIwnTOt8iDn76g9j1'})
 
 require('./lib/app').default({ events : deviceEvents, device : deviceRegistry, store : airConStore})
