@@ -9,6 +9,7 @@ const config = require(gcpConfig)
 const PubSub = require('@google-cloud/pubsub')
 const firebaseAdmin = require('firebase-admin')
 const serviceAccount = require(firebaseConfig)
+const serviceRequest = require('./lib/service-request')
 
 const pubsub = new PubSub(config)
 const deviceEventStore = new CacheBase()
@@ -16,7 +17,7 @@ const deviceRegistryStore = new CacheBase()
 const airConStore = new CacheBase()
 
 const deviceEvents = new DeviceEvents({ store : deviceEventStore, pubsub })
-const deviceRegistry = new DeviceRegistry({ jwt , store : deviceRegistryStore })
+const deviceRegistry = new DeviceRegistry({ jwt , store : deviceRegistryStore, serviceRequest })
 
 
 firebaseAdmin.initializeApp({
