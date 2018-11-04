@@ -2,6 +2,5 @@ FROM arm32v7/node:stretch
 COPY bin/qemu-arm-static /usr/bin
 WORKDIR /usr/app
 ADD . .
-RUN npm install --unsafe-perm
 EXPOSE 8080
 CMD ["node", "index.js"]

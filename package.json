@@ -35,6 +35,8 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "express": "^4.16.4",
-    "firebase-admin": "^6.1.0"
+    "fetch-mock": "^7.2.5",
+    "firebase-admin": "^6.1.0",
+    "node-fetch": "^2.2.0"
   }
 }

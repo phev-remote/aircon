@@ -3,7 +3,6 @@ import DeviceRegistry from './device-registry'
 import sinon from 'sinon'
 import Cache from 'cache-base'
 
-
 const assert = chai.assert
 
 describe('Device Registry', () => {
@@ -12,6 +11,8 @@ describe('Device Registry', () => {
     let jwt = { verify : () => null }
     let jwtInvalid = { verify : () => null }
     let jwtDifferentUser = { verify : () => null }
+    let serviceRequest = { getJsonServiceRequest : () => null }
+    let serviceRequestNoDevice = { getJsonServiceRequest : () => null }
 
     beforeEach(() => {
         store = new Cache()
@@ -21,9 +22,8 @@ describe('Device Registry', () => {
         sandbox.stub(jwt,'verify').returns({sub : 123})
         sandbox.stub(jwtDifferentUser,'verify').returns({sub : 124})
         sandbox.stub(jwtInvalid,'verify').returns({error : {code : 'auth/argument-error', message : 'blah blah'}})
-        
-        //sandbox.stub(deviceNoDevice,'get').resolves(null)
-        //sandbox.stub(events,'subscribe').resolves(true)
+        sandbox.stub(serviceRequest,'getJsonServiceRequest').resolves({ "deviceId":"my-device2","uid":"3tZrIIUySpftIwnTOt8iDn76g9j1"})
+        sandbox.stub(serviceRequestNoDevice,'getJsonServiceRequest').resolves({ error : { description : 'Device does not exist'}})
 
     })
     afterEach(() => {
@@ -31,12 +31,13 @@ describe('Device Registry', () => {
     })
     it('Should bootstrap', () => {
         
-        assert.isNotNull(new DeviceRegistry({ store }))
+        assert.isNotNull(new DeviceRegistry({ store, serviceRequest }))
     })
     it('Should get device', async () => {
         const deps = {
             jwt,
-            store
+            store,
+            serviceRequest
         }
         
         const deviceRegistry = new DeviceRegistry(deps)
@@ -50,7 +51,8 @@ describe('Device Registry', () => {
     
         const deps = {
             jwt,
-            store
+            store,
+            serviceRequest
         }
     
         const deviceRegistry = new DeviceRegistry(deps)
@@ -65,21 +67,23 @@ describe('Device Registry', () => {
     
         const deps = {
             jwt,
-            store
+            store,
+            serviceRequest: serviceRequestNoDevice
         }
     
         const deviceRegistry = new DeviceRegistry(deps)
         
         const device = await deviceRegistry.get({ deviceId : '123', jwt : 'xxxx' })
         
-        assert.isUndefined(device)
+        assert.deepEqual(device, { error : { description : 'Device does not exist'} })
         
     })
     it('Should reject if invalid JWT', async () => {
     
         const deps = {
             jwt : jwtInvalid,
-            store
+            store,
+            serviceRequest
         }
     
         deps.store.set('123', { deviceId : '123', uid : 123 })
@@ -96,7 +100,8 @@ describe('Device Registry', () => {
     
         const deps = {
             jwt : jwtDifferentUser,
-            store
+            store,
+            serviceRequest
         }
     
         deps.store.set('123', { deviceId : '123', uid : 123 })
