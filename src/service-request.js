@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-const getJsonServiceRequest = (uri, jwt) => {
+const getJsonServiceRequest = async (uri, jwt) => {
     const response = await fetch(uri, {
     method: 'GET',
     headers: {
