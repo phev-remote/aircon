@@ -28,11 +28,13 @@
     "cross-env": "^5.2.0",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
-    "sinon": "^7.1.0"
+    "sinon": "^7.1.0",
+    "supertest": "^3.3.0"
   },
   "dependencies": {
     "@google-cloud/pubsub": "^0.20.1",
     "body-parser": "^1.18.3",
+    "cache-base": "^4.0.0",
     "cors": "^2.8.4",
     "express": "^4.16.4",
     "fetch-mock": "^7.2.5",

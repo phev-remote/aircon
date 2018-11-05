@@ -70,10 +70,9 @@ const App = deps => {
         }
     })
     
-    http.listen(PORT, HOST)
+    //console.log(`Running on http://${HOST}:${PORT}`)
 
-    console.log(`Running on http://${HOST}:${PORT}`)
-
+    return http.listen(PORT, HOST)
 }
 
 export default App
