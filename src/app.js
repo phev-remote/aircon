@@ -48,25 +48,29 @@ const App = deps => {
 
         if(!deviceId) {
             res.status(400).send('No device specified')
+            return
         }
 
         if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') { 
             const token = req.headers.authorization.split(' ')[1]
-            try {
-                if(req.body.state.aircon) {
-                    await aircon.turnOn({ deviceId, jwt: token })  
+            
+            if(req.body.state.aircon) {
+                const response = await aircon.turnOn({ deviceId, jwt: token })  
                 
-                    res.status(200).send({ response : 'ok'})
-                } else {
-                    await aircon.turnOff({ deviceId, jwt: token })
+                res.status(200).send(response)
+                return
+
+             } else {
+                const response = await aircon.turnOff({ deviceId, jwt: token })
                 
-                    res.status(200).send({ response : 'ok'})
-                } 
-            } catch (err) {
-                res.status(500).send({ error : err})
-            }
+                res.status(200).send(response)
+
+                return
+            } 
+            
         } else {
             res.status(401).send('Unauthorised')
+            return
         }
     })
     

@@ -16,7 +16,11 @@ describe('App', () => {
     let jwt = { verify : () => null }
     let jwtInvalid = { verify : () => null }
     let jwtDifferentUser = { verify : () => null }
-    let pubsub = { }
+    let publisher = { publish : () => null }
+    let results = [{ on : () => null, name : 'local-123-subscription'}]
+    let subscription = { get : () => null }
+    let topic = { subscription : () => null, publisher : () => null}
+    let pubsub = { topic : () => null }
     let app = null
 
     const deviceEventStore = new CacheBase()
@@ -39,7 +43,13 @@ describe('App', () => {
         sandbox.stub(jwt,'verify').returns({sub : '123'})
         sandbox.stub(jwtDifferentUser,'verify').returns({sub : '124'})
         sandbox.stub(jwtInvalid,'verify').returns({error : {code : 'auth/argument-error', message : 'blah blah'}})
+        sandbox.stub(publisher, 'publish').resolves(true)
+        sandbox.stub(topic,'publisher').returns(publisher)
+
+        sandbox.stub(subscription, 'get').resolves(results)
+        sandbox.stub(topic,'subscription').returns(subscription)
         
+        sandbox.stub(pubsub,'topic').returns(topic)
         app = App({ device: deviceRegistry, events : deviceEvents, store : airConStore, jwt })
     
     })

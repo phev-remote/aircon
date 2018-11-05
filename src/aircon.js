@@ -64,36 +64,27 @@ class AirCon extends EventEmitter {
     async turnOn(args) {
         const { jwt, deviceId } = args
 
-        try {
-            const device = await this.device.get({jwt , deviceId})
+        const device = await this.device.get({jwt , deviceId})
 
-            if(!device) {
-                return { response : 'device not found'}
-            }
-
-            this.events.dispatch({ deviceId, state : { airConOn : true} })
-        } catch (err) {
-            return { error : err}
+        if(!device) {
+            return { response : 'device not found'}
         }
-    
+
+        this.events.dispatch({ deviceId, state : { airConOn : true} })
+        return { response : 'ok'}
     }
     async turnOff(args) {
         const { jwt, deviceId } = args
 
-        try {
-            const device = await this.device.get({jwt , deviceId})
+        const device = await this.device.get({jwt , deviceId})
 
-            if(!device) {
-                return { response : 'device not found'}
-            }
-
-            return this.events.dispatch({ deviceId, state : { airConOn : false} })
-
-            
-        } catch (err) {
-            return { error : err}
+        if(!device) {
+            return { response : 'device not found'}
         }
-    
+
+        this.events.dispatch({ deviceId, state : { airConOn : false} })
+
+        return { response : 'ok'}
     } 
 }
 
