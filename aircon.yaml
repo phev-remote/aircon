@@ -19,26 +19,16 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/secrets/google/gcpconfig.json
         - name: FIREBASE_CONFIG
-          value: /var/secrets/firebase/firebase-key.json
-        image: gcr.io/phev-db3fa/github.com/phev-remote/aircon:9e4144a
+          value: /var/secrets/firebase-key.json
+        image: gcr.io/phev-db3fa/aircon:ba650e4
         name: aircon
         ports:
         - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
         volumeMounts:
-        - mountPath: /var/secrets/firebase
-          name: firebase-key
-        - mountPath: /var/secrets/google
-          name: gcloud-config-key
+        - mountPath: /var/secrets
+          name: secret-keys
       volumes:
-      - name: firebase-key
+      - name: secret-keys
         secret:
           defaultMode: 420
           secretName: firebase-key
-      - name: gcloud-config-key
-        secret:
-          defaultMode: 420
-          secretName: gcloud-config-key

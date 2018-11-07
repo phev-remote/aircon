@@ -3,6 +3,7 @@ const firebaseConfig = process.env.FIREBASE_CONFIG || './firebase.json'
 
 const DeviceEvents = require('./lib/device-event').default
 const DeviceRegistry = require('./lib/device-registry').default
+const AirCon = require('./lib/aircon').default
 const jwt = require('./lib/jwt')
 const CacheBase = require('cache-base')
 const config = require(gcpConfig)
