@@ -3,7 +3,6 @@ import AirCon from './aircon'
 import sinon from 'sinon'
 import Cache from 'cache-base'
 
-
 const assert = chai.assert
 
 describe('Air Con', () => {
@@ -15,6 +14,8 @@ describe('Air Con', () => {
     
     let events = { subscribe : () => null, on : () => null, dispatch : () => null}
     let store = null 
+    //const logger = ({ info : () => null, debug : message => console.log(message), error: () => null })
+    const logger = ({ info : () => null, debug : message => null, error: () => null })
     
 
     beforeEach(() => {
@@ -36,35 +37,41 @@ describe('Air Con', () => {
         
         //assert.isNotNull(aircon())
     })
-    it('Should call get device', async () => {
+    it('Should call get device when not cached', async () => {
+        
         const request = {
             jwt : '1234',
-            device: '123',
+            deviceId: 'xxx',
         }
         const deps = {
             device,
             store,
-            events
+            events,
+            logger
         }
-        
         const aircon = new AirCon(deps)
+        
+        assert.isFalse(deps.store.has('xxx'))
         
         aircon.status(request)
         
-        assert(deps.device.get.calledOnce,'Should call get device')
+        assert(deps.device.get.calledOnce,'Should call get device when not cached')
         
     })
     it('Should handle no device', async () => {
         const request = {
             jwt : '1234',
-            device: '1234'
+            deviceId: 'xxx'
         }
         const deps = {
             device : deviceNoDevice,
             store,
-            events
+            events,
+            logger
         }
         
+        assert.isFalse(deps.store.has('xxx'))
+
         const aircon = new AirCon(deps)
         
         const response = await aircon.status(request)
@@ -81,7 +88,8 @@ describe('Air Con', () => {
         const deps = {
             device : deviceReject,
             store,
-            events
+            events,
+            logger,
         }
         
         const aircon = new AirCon(deps)
@@ -104,7 +112,8 @@ describe('Air Con', () => {
         const deps = {
             device,
             store,
-            events
+            events,
+            logger,
         }
         
         const aircon = new AirCon(deps)
@@ -122,14 +131,15 @@ describe('Air Con', () => {
         const deps = {
             device,
             store,
-            events
+            events,
+            logger,
         }
         
         const aircon = new AirCon(deps)
         
         const response = await aircon.status(request)
         
-        assert.deepEqual(response, { status : null})
+        assert.include(response, { status : null })
     })
     it('Should handle event', async () => {
         const request = {
@@ -139,7 +149,8 @@ describe('Air Con', () => {
         const deps = {
             device,
             store,
-            events
+            events,
+            logger,
         }
         
         const aircon = new AirCon(deps)
@@ -155,16 +166,18 @@ describe('Air Con', () => {
         const deps = {
             device,
             store,
-            events
+            events,
+            logger
         }
         
         const aircon = new AirCon(deps)
         
+        store.set('123', { status : null, subscribed : true})
         aircon.handleEvent({ deviceId : '123', register : 26, data : [0,1]})
 
         const response = await aircon.status(request)
         
-        assert.deepEqual(response, { status : 'on'})
+        assert.include(response, { status : 'on' })
     })
     it('Should return off status', async () => {
         const request = {
@@ -174,16 +187,18 @@ describe('Air Con', () => {
         const deps = {
             device,
             store,
-            events
+            events,
+            logger
         }
-        
         const aircon = new AirCon(deps)
         
+        store.set('123', { status : null, subscribed : true})
+
         aircon.handleEvent({ deviceId : '123', register : 26, data : [0,0]})
 
         const response = await aircon.status(request)
         
-        assert.deepEqual(response, { status : 'off'})
+        assert.include(response, { status : 'off'})
     })
     it('Should only handle aircon registers', async () => {
         const request = {
@@ -193,30 +208,35 @@ describe('Air Con', () => {
         const deps = {
             device,
             store,
-            events
+            events,
+            logger
         }
-        
         const aircon = new AirCon(deps)
         
         aircon.handleEvent({ deviceId : '123', register : 27, data : [0,0]})
 
         const response = await aircon.status(request)
         
-        assert.deepEqual(response, { status : null})
+        assert.include(response, { status : null })
     })
     it('Should not subscribe twice', async () => {
+        const request = {
+            jwt : '1234',
+            deviceId: '123'
+        }
         const deps = {
             device,
+            store,
             events,
-            store
+            logger
         }
-        
-        store.set('123', {status : 'off'})
+        store.set('123', {status : 'off', subscribed: true})
 
-        store.get('123')
         const aircon = new AirCon(deps)
      
-        await aircon.subscribe({ deviceId : '123' })
+        assert(deps.events.subscribe.notCalled)
+
+        await aircon.status(request)
         
         assert(deps.events.subscribe.notCalled,'Should not call subscribe twice')
     })
@@ -227,9 +247,10 @@ describe('Air Con', () => {
         }
         const deps = {
             device,
-            store
+            store,
+            events,
+            logger
         }
-        
         const aircon = new AirCon(deps)
         
         aircon.on('123', x => {
@@ -249,9 +270,10 @@ describe('Air Con', () => {
         }
         const deps = {
             device,
-            store
+            store,
+            events,
+            logger
         }
-        
         const aircon = new AirCon(deps)
         
         aircon.on('123', x => {
@@ -271,10 +293,10 @@ describe('Air Con', () => {
         }
         const deps = {
             device,
+            store,
             events,
-            store
+            logger
         }
-        
         const aircon = new AirCon(deps)
         
         await aircon.turnOn(request)
@@ -289,10 +311,10 @@ describe('Air Con', () => {
         }
         const deps = {
             device,
+            store,
             events,
-            store
+            logger
         }
-        
         const aircon = new AirCon(deps)
         
         await aircon.turnOff(request)
@@ -308,7 +330,8 @@ describe('Air Con', () => {
         const deps = {
             device : deviceAuthError,
             store,
-            events
+            events,
+            logger
         }
         
         const aircon = new AirCon(deps)

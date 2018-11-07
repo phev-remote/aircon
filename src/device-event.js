@@ -10,6 +10,7 @@ class DeviceEvents extends EventEmitter {
         this.store = deps.store
         this.pubsub = deps.pubsub
         this.event = this.event.bind(this)
+        this.logger = deps.logger
     }
     async subscribe(args) {
         const { callerId, deviceId, callback } = args
@@ -22,7 +23,7 @@ class DeviceEvents extends EventEmitter {
                     .get({
                         autoCreate: true,
                     }).then(results => {
-        
+        //                this.logger.debug(`Subscribed to ${subscriptionName}`)
                         const subscription = results[0]
                         subscription.on('message', this.event)
                     
@@ -35,6 +36,7 @@ class DeviceEvents extends EventEmitter {
                     })
     }
     event(message) {
+        console.log(`Device ${message.attributes.deviceId} data ${JSON.stringify(message.data)}`)
         this.emit(message.attributes.deviceId,{ deviceId : message.attributes.deviceId,...JSON.parse(message.data) })
         message.ack()
     }
