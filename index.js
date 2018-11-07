@@ -19,6 +19,7 @@ const airConStore = new CacheBase()
 const deviceEvents = new DeviceEvents({ store : deviceEventStore, pubsub })
 const deviceRegistry = new DeviceRegistry({ jwt , store : deviceRegistryStore, serviceRequest })
 
+const aircon = new AirCon({events : deviceEvents, device : deviceRegistry, store : airConStore})
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
@@ -26,4 +27,4 @@ firebaseAdmin.initializeApp({
 
 deviceRegistryStore.set('my-device2', { deviceId: 'my-device2', uid : '3tZrIIUySpftIwnTOt8iDn76g9j1'})
 
-require('./lib/app').default({ events : deviceEvents, device : deviceRegistry, store : airConStore})
+require('./lib/app').default({ aircon } )

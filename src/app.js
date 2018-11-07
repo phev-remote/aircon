@@ -5,6 +5,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 import winston from 'winston'
 
+const VERSION = '1'
 const PORT = process.env.PORT || 8080
 const HOST = process.env.HOST || '0.0.0.0'
 
@@ -13,16 +14,17 @@ const logger = winston.createLogger({
   })
 logger.add(new winston.transports.Console({
     format: winston.format.simple(),
-    level : 'debug'
+    level : 'info'
   }))
 logger.stream = {
     write: function(message, encoding) {
-        logger.info(message);
+        logger.debug(message);
     },
 }
 
 const SHORT_SHA = process.env.SHORT_SHA  || 'unknown'
-  const App = deps => {
+
+const App = deps => {
     logger.info(`Air conditioning service v${process.env.npm_package_version} sha:${SHORT_SHA}`)
     
     logger.info('Server starting')
@@ -32,10 +34,15 @@ const SHORT_SHA = process.env.SHORT_SHA  || 'unknown'
     http.use(cors())
 
     deps.logger = logger
-    const aircon = new AirCon(deps)
+    const aircon = deps.aircon
     
     http.get('/status', (req, res) => {
-        res.status(200).send({ status : 'ok'})
+        const response = {
+            status : 'ok',
+            version : VERSION,
+            sha : SHORT_SHA
+        }
+        res.status(200).send(response)
     })
 
     http.get('/:deviceId', async (req, res) => {

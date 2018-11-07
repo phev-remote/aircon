@@ -8,7 +8,6 @@ class AirCon extends EventEmitter {
         this.store = deps.store
         this.handleEvent = this.handleEvent.bind(this)
         this.logger = deps.logger
-        console.log(`Logger is ${this.logger}`)
         
     }
     async status(args) {

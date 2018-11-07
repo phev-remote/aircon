@@ -7,6 +7,7 @@ import request from 'supertest'
 import DeviceEvents from './device-event'
 import DeviceRegistry from './device-registry'
 import serviceRequest from './service-request'
+import AirCon from './aircon'
 
 //const assert = chai.assert
 
@@ -30,6 +31,8 @@ describe('App', () => {
     const deviceEvents = new DeviceEvents({ store : deviceEventStore, pubsub })
     const deviceRegistry = new DeviceRegistry({ jwt , store : deviceRegistryStore, serviceRequest })
 
+    const logger = ({ info : () => null, debug : message => null, error: () => null })
+    
         
     beforeEach(() => {
         
@@ -50,7 +53,9 @@ describe('App', () => {
         sandbox.stub(topic,'subscription').returns(subscription)
         
         sandbox.stub(pubsub,'topic').returns(topic)
-        app = App({ device: deviceRegistry, events : deviceEvents, store : airConStore, jwt })
+
+        const aircon = new AirCon({ device: deviceRegistry, events : deviceEvents, store : airConStore, jwt, logger })
+        app = App({aircon})
     
     })
     afterEach(() => {
